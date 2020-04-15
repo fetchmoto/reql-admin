@@ -1,0 +1,46 @@
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+.layout__root {
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  height: 100vh;
+
+  .layout__navigation {
+    height: 100%;
+    border-radius: 0;
+    height: 100vh;
+    background: #001529;
+  }
+
+  .layout__content {
+    padding: 0;
+  }
+
+  .content {
+    padding: 24px;
+    margin: 0;
+  }
+}
+
+.clear {
+  content: ' ';
+  clear: both;
+  width: 100%;
+}
+
+.site-layout-background {
+  background: #001529;
+  width: 250px;
+}
