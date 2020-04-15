@@ -3,12 +3,12 @@
   "name": "ReSQL Admin",
   "icons": [
     {
-      "src": "m.jpg",
+      "src": "r.jpg",
       "type": "image/jpeg",
       "sizes": "96x96"
     },
     {
-      "src": "m.jpg",
+      "src": "r.jpg",
       "type": "image/jpeg",
       "sizes": "128x128"
     }

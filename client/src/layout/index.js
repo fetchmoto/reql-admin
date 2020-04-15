@@ -78,19 +78,22 @@ const ApplicationLayout = props => {
 
   // Build the navigation items to be rendered
   const navigationItems = databases.map((database, index) => {
-    return (
-      <SubMenu key={index} title={database.name}>
-        {database.tables.map((table, index) => {
-          return (<Menu.Item onClick={() => navigate(`/database/${database.name}/table/${table}`)} key={index}>{table}</Menu.Item>)
-        })}
-      </SubMenu>
-    );
+    if (database.name !== 'rethinkdb') {
+      return (
+        <SubMenu key={index} title={database.name}>
+          {database.tables.map((table, index) => {
+            return (<Menu.Item onClick={() => navigate(`/database/${database.name}/table/${table}`)} key={index}>{table}</Menu.Item>)
+          })}
+        </SubMenu>
+      );
+    }
   });
 
   return (
     <div className="root">
       <Layout className="layout__root">
         <Sider className="site-layout-background">
+          <div className="logo">ReQL Admin</div>
           <Menu mode="inline" theme="dark" className="layout__navigation">
             {navigationItems}
           </Menu>

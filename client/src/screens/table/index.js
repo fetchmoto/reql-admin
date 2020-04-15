@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { subscribe } from 'react-contextual';
-import { Table, PageHeader, Button } from 'antd';
+import { Table, PageHeader, Button, Menu, Dropdown, Modal, Input } from 'antd';
+
+import { EllipsisOutlined } from '@ant-design/icons';
 
 // Local Imports
 import { Loader } from '../../shared/components';
+import './table.scss';
+
+const defaultEditData = {
+  field: '',
+  value: ''
+};
 
 const DatabaseTable = props => {
   const { database, table } = props;
@@ -12,27 +20,55 @@ const DatabaseTable = props => {
   const [ loading, setLoading ] = useState(true);
   const [ data, setData ] = useState([]);
   const [ fields, setFields ] = useState([]);
+  const [ indexes, setIndexes ] = useState([]);
+  const [ doc, setDoc ] = useState(false);
+
+  // Edit Field Data
+  const [ editFieldVisible, setEditFieldVisible ] = useState(false);
+  const [ editFieldData, setEditFieldData ] = useState(defaultEditData);
+
+  const selectDocument = key => {
+    setDoc(data[key]);
+  }
+
+  const openEditFieldModal = key => {
+    setEditFieldData({
+      field: key,
+      value: doc[key]
+    });
+    setEditFieldVisible(true);
+  }
+
+  const closeEditFieldModal = () => {
+    setEditFieldData(defaultEditData);
+    setEditFieldVisible(false);
+  }
+
+  const updateEditFieldData = (field, value) => {
+    setEditFieldData({
+      ...editFieldData,
+      [field]: value
+    });
+  }
 
   /**
    * Retrieves all unique fields across a table
    * so we can define them in the component table.
    */
-  const retrieveTableFields = async () => {
-    try {
-      const res = await props.rethink.client
-        .db(database)
-        .table(table)
-        .map(doc => doc.keys())
-        .reduce((uniq, doc) => uniq.setUnion(doc))
-        .distinct()
-        .run(props.rethink.connection);
-
-      return setFields(res);
-    } catch (error) {
-      console.log(error);
-    }
-
-    setFields([]);
+  const retrieveTableIndexes = async () => {
+    // try {
+    //   const res = await props.rethink.client
+    //     .db(database)
+    //     .table(table)
+    //     .indexList()
+    //     .run(props.rethink.connection);
+    //
+    //   return setIndexes(res);
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    //
+    // setIndexes([]);
   }
 
   /**
@@ -41,12 +77,13 @@ const DatabaseTable = props => {
    */
   const retrieveTableData = async () => {
     try {
-      await retrieveTableFields();
+      await retrieveTableIndexes();
 
       // Get the database list
       const res = await props.rethink.client
         .db(database)
         .table(table)
+        .limit(1000)
         .run(props.rethink.connection);
 
       // Convert to an array.
@@ -66,6 +103,7 @@ const DatabaseTable = props => {
     // If rethink is connected, and databases have not been pulled.
     if (props.rethink.connected === true) {
       retrieveTableData();
+      setDoc(false);
     }
 
   }, [props.rethink.connected, table]);
@@ -78,35 +116,91 @@ const DatabaseTable = props => {
    * between this array, and the data array is this will
    * add a key for each document (Needed for table)
    */
-  const dataSource = data.map((d, i) => {
+  const items = data.map((d, i) => {
     return {
-      ...d,
+      id: d.id,
       key: i
     }
-  })
-
-  /**
-   * Setup the columns array for the table.
-   */
-  const columns = fields.map((field, index) => {
-    return { title: field, dataIndex: field, key: index };
   });
+
+  // Menu for document
+  const documentMenu = () => (
+    <Menu>
+      <Menu.Item onClick={() => console.log('test')}>Delete Document</Menu.Item>
+    </Menu>
+  );
 
   return (
     <>
-      <PageHeader
-        ghost={false}
-        title={`${database} / ${table}`}
-        extra={[
-          <Button key="2">Operation</Button>,
-          <Button key="1" type="primary">
-            Create Document
-          </Button>,
-        ]}
-      />
-      <div className="content">
-        <Table dataSource={dataSource} columns={columns} />
+      <div className="database-table__container">
+        <div className="items">
+          <div className="title">
+            {table}
+            <div className="options">
+              <Dropdown trigger="click" overlay={documentMenu.bind(this)}>
+                <Button shape="circle"><EllipsisOutlined /></Button>
+              </Dropdown>
+            </div>
+          </div>
+          <div className="add"><i className="fas fa-plus-circle"></i>&nbsp;&nbsp; Add Document</div>
+          <ul>
+            {items.map((item, i) => {
+              let active = false;
+              if (doc !== false)
+                if (doc.id === item.id) active = true;
+
+              return (
+                <li className={active ? 'selected' : ''} onClick={selectDocument.bind(this, i)}>
+                  {item.id}
+                  <i className="fas fa-caret-right icon"></i>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+        <div className="information">
+          {
+            doc && (
+              <>
+                <div className="title">
+                  {doc.id}
+                  <div className="options">
+                    <Dropdown trigger="click" overlay={documentMenu.bind(this)}>
+                      <Button shape="circle"><EllipsisOutlined /></Button>
+                    </Dropdown>
+                  </div>
+                </div>
+                <div className="add"><i className="fas fa-plus-circle"></i>&nbsp;&nbsp; Add Field</div>
+                <ul>
+                  {Object.keys(doc).map((field, index) => {
+                    return (
+                      <li key={index}>
+                        <span className="field">
+                          {field}
+                        </span>: "{doc[field]}"
+                        <div className="options">
+                          <i onClick={openEditFieldModal.bind(this, field)} className="fas fa-pencil-alt icon"></i>
+                          <i className="fas fa-trash icon"></i>
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </>
+            )
+          }
+        </div>
       </div>
+
+      <Modal
+        title="Edit Field"
+        visible={editFieldVisible}
+        onOk={closeEditFieldModal.bind(this)}
+        onCancel={closeEditFieldModal.bind(this)}
+      >
+        <Input value={editFieldData.field} onChange={e => updateEditFieldData('field', e.target.value)} placeholder="Field" style={{marginBottom: 15}} />
+        <Input value={editFieldData.value} onChange={e => updateEditFieldData('title', e.target.value)} placeholder="Value" style={{marginBottom: 15}} />
+      </Modal>
     </>
   );
 }
