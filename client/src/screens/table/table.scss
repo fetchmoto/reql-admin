@@ -159,6 +159,7 @@
       position: relative;
       min-height: 50px;
       line-height: 50px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
       .field {
         font-weight: bold;
@@ -166,7 +167,7 @@
       }
 
       .options {
-        display: none;
+        display: block;
         position: absolute;
         right: 15px;
         top: 0;

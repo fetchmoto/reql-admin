@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { subscribe } from 'react-contextual';
-import { Table, PageHeader, Button, Menu, Dropdown, Modal, Input } from 'antd';
+import { Table, PageHeader, Button, Menu, Dropdown, Modal, Input, Popconfirm } from 'antd';
 
 import { EllipsisOutlined } from '@ant-design/icons';
 
@@ -13,24 +13,42 @@ const defaultEditData = {
   value: ''
 };
 
+const defaultCreateData = {
+  field: '',
+  value: ''
+};
+
 const DatabaseTable = props => {
   const { database, table } = props;
 
-  // Local function state
+  // Loading state
   const [ loading, setLoading ] = useState(true);
+
+  // Table data
   const [ data, setData ] = useState([]);
-  const [ fields, setFields ] = useState([]);
-  const [ indexes, setIndexes ] = useState([]);
+
+  // Current selected document
   const [ doc, setDoc ] = useState(false);
 
   // Edit Field Data
   const [ editFieldVisible, setEditFieldVisible ] = useState(false);
   const [ editFieldData, setEditFieldData ] = useState(defaultEditData);
 
+  // Create Field Data
+  const [ createFieldVisible, setCreateFieldVisible ] = useState(false);
+  const [ createFieldData, setCreateFieldData ] = useState(defaultCreateData);
+
+  /**
+   * Selects the current document to be shown.
+   */
   const selectDocument = key => {
     setDoc(data[key]);
   }
 
+  /**
+   * Edit Field data methods. Handles opening modals,
+   * updating data objects, etc.
+   */
   const openEditFieldModal = key => {
     setEditFieldData({
       field: key,
@@ -52,23 +70,63 @@ const DatabaseTable = props => {
   }
 
   /**
-   * Retrieves all unique fields across a table
-   * so we can define them in the component table.
+   * Create Field data methods. Handles opening modals,
+   * updating data objects, etc.
    */
-  const retrieveTableIndexes = async () => {
-    // try {
-    //   const res = await props.rethink.client
-    //     .db(database)
-    //     .table(table)
-    //     .indexList()
-    //     .run(props.rethink.connection);
-    //
-    //   return setIndexes(res);
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    //
-    // setIndexes([]);
+  const openCreateFieldModal = () => {
+    setCreateFieldVisible(true);
+  }
+
+  const closeCreateFieldModal = () => {
+    setCreateFieldData(defaultCreateData);
+    setCreateFieldVisible(false);
+  }
+
+  const updateCreateFieldData = (field, value) => {
+    setCreateFieldData({
+      ...createFieldData,
+      [field]: value
+    });
+  }
+
+  /**
+   * Handles the editing of a field for the current
+   * selected document.
+   */
+  const handleDeleteDocument = async () => {
+    console.log('Deleting document');
+  }
+
+  /**
+   * Handles the editing of a field for the current
+   * selected document.
+   */
+  const handleCreateDocument = async () => {
+    console.log('Creating document');
+  }
+
+  /**
+   * Handles the editing of a field for the current
+   * selected document.
+   */
+  const handleEditField = async () => {
+    console.log('Editing field');
+  }
+
+  /**
+   * Handles the creation of a field for the current
+   * selected document.
+   */
+  const handleAddField = async () => {
+    console.log('Adding field');
+  }
+
+  /**
+   * Handles the deletion of a field for the current
+   * selected document.
+   */
+  const deleteField = async field => {
+    console.log(`Delete field ${field} from ${doc.id}`);
   }
 
   /**
@@ -77,7 +135,6 @@ const DatabaseTable = props => {
    */
   const retrieveTableData = async () => {
     try {
-      await retrieveTableIndexes();
 
       // Get the database list
       const res = await props.rethink.client
@@ -97,12 +154,30 @@ const DatabaseTable = props => {
     setData([]);
   }
 
+  /**
+   * @TODO: Figure out why the following logic
+   * is not returning anything onChange. Seems to be a
+   * websocket issue
+   */
+  const subscribe = () => {
+    console.log('subscribed');
+
+    props.rethink.client
+      .db(database)
+      .table(table)
+      .changes({includeInitial: true})
+      .run(props.rethink.connection, (error, changes) => {
+        console.log('Changes discovered!');
+      });
+  }
+
   // Watch connection, current table and database.
   useEffect(() => {
 
     // If rethink is connected, and databases have not been pulled.
     if (props.rethink.connected === true) {
       retrieveTableData();
+      // subscribe();
       setDoc(false);
     }
 
@@ -123,6 +198,13 @@ const DatabaseTable = props => {
     }
   });
 
+  // Menu for table
+  const tableMenu = () => (
+    <Menu>
+      <Menu.Item onClick={() => console.log('test')}>Delete Table</Menu.Item>
+    </Menu>
+  );
+
   // Menu for document
   const documentMenu = () => (
     <Menu>
@@ -137,7 +219,7 @@ const DatabaseTable = props => {
           <div className="title">
             {table}
             <div className="options">
-              <Dropdown trigger="click" overlay={documentMenu.bind(this)}>
+              <Dropdown trigger="click" overlay={tableMenu.bind(this)}>
                 <Button shape="circle"><EllipsisOutlined /></Button>
               </Dropdown>
             </div>
@@ -150,7 +232,7 @@ const DatabaseTable = props => {
                 if (doc.id === item.id) active = true;
 
               return (
-                <li className={active ? 'selected' : ''} onClick={selectDocument.bind(this, i)}>
+                <li key={i} className={active ? 'selected' : ''} onClick={selectDocument.bind(this, i)}>
                   {item.id}
                   <i className="fas fa-caret-right icon"></i>
                 </li>
@@ -170,7 +252,9 @@ const DatabaseTable = props => {
                     </Dropdown>
                   </div>
                 </div>
-                <div className="add"><i className="fas fa-plus-circle"></i>&nbsp;&nbsp; Add Field</div>
+                <div className="add" onClick={openCreateFieldModal.bind(this)}>
+                  <i className="fas fa-plus-circle"></i>&nbsp;&nbsp; Add Field
+                </div>
                 <ul>
                   {Object.keys(doc).map((field, index) => {
                     return (
@@ -180,7 +264,15 @@ const DatabaseTable = props => {
                         </span>: "{doc[field]}"
                         <div className="options">
                           <i onClick={openEditFieldModal.bind(this, field)} className="fas fa-pencil-alt icon"></i>
-                          <i className="fas fa-trash icon"></i>
+                          <Popconfirm
+                            title="Are you sure delete this document?"
+                            onConfirm={deleteField.bind(this, field)}
+                            onCancel={() => console.log('canceled')}
+                            okText="Yes"
+                            cancelText="No"
+                          >
+                            <i className="fas fa-trash icon"></i>
+                          </Popconfirm>
                         </div>
                       </li>
                     )
@@ -191,6 +283,16 @@ const DatabaseTable = props => {
           }
         </div>
       </div>
+
+      <Modal
+        title="Add Field"
+        visible={createFieldVisible}
+        onOk={handleAddField.bind(this)}
+        onCancel={closeCreateFieldModal.bind(this)}
+      >
+        <Input value={createFieldData.field} onChange={e => updateCreateFieldData('field', e.target.value)} placeholder="Field" style={{marginBottom: 15}} />
+        <Input value={createFieldData.value} onChange={e => updateCreateFieldData('title', e.target.value)} placeholder="Value" style={{marginBottom: 15}} />
+      </Modal>
 
       <Modal
         title="Edit Field"
