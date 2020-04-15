@@ -90,6 +90,15 @@ const DatabaseTable = props => {
   }
 
   /**
+   * Below are the methods for handling specific actions
+   * like editing fields, or creating documents as well
+   * as deleting something.
+   *
+   * Naming convention should be that of
+   * handle<ActionName> for quick reference.
+   */
+
+  /**
    * Handles the editing of a field for the current
    * selected document.
    */
@@ -125,7 +134,7 @@ const DatabaseTable = props => {
    * Handles the deletion of a field for the current
    * selected document.
    */
-  const deleteField = async field => {
+  const handleDeleteField = async field => {
     console.log(`Delete field ${field} from ${doc.id}`);
   }
 
@@ -266,7 +275,7 @@ const DatabaseTable = props => {
                           <i onClick={openEditFieldModal.bind(this, field)} className="fas fa-pencil-alt icon"></i>
                           <Popconfirm
                             title="Are you sure delete this document?"
-                            onConfirm={deleteField.bind(this, field)}
+                            onConfirm={handleDeleteField.bind(this, field)}
                             onCancel={() => console.log('canceled')}
                             okText="Yes"
                             cancelText="No"
@@ -284,6 +293,7 @@ const DatabaseTable = props => {
         </div>
       </div>
 
+      {/** Modal for adding a field. **/}
       <Modal
         title="Add Field"
         visible={createFieldVisible}
@@ -294,6 +304,7 @@ const DatabaseTable = props => {
         <Input value={createFieldData.value} onChange={e => updateCreateFieldData('title', e.target.value)} placeholder="Value" style={{marginBottom: 15}} />
       </Modal>
 
+      {/** Modal for editing a field. **/}
       <Modal
         title="Edit Field"
         visible={editFieldVisible}
