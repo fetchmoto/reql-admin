@@ -10,6 +10,9 @@ A future Administration GUI for RethinkDB.
 
 Want to contribute? Feel free to submit pull requests, create issues, and help with existing issues. The goal here is to create an up to date tool for easy RethinkDB administration.
 
+# Bugs
+- [ ] When editing a field, if the field name is changed, it will add it, but not delete the old one.
+
 # Todo
 
 Below holds information on what was recently done, and what is in the near future.
@@ -27,16 +30,16 @@ Below holds information on what was recently done, and what is in the near futur
 - [X] Ability to create new database
 - [X] Ability to create new tables
 - [ ] Create connection screen (Specify websocket address, database information)
-- [ ] Refactor rethink client (Possibly create a react hook)
+- [X] Refactor rethink client (Possibly create a react hook)
 - [ ] Figure out why changefeeds are not reporting back once subscribed to.
 - [ ] Filtering on DatabaseTable component
 - [ ] Renaming a table
 - [ ] Renaming a database
-- [ ] Handling sub-documents display
+- [X] Handling sub-documents display
 
 # Roadmap Features
 - [ ] Import JSON / CSV into Tables
-- [ ] Export table as JSON / CSV
+- [X] Export table as JSON / CSV
 
 # Requirements
 
