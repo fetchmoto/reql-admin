@@ -476,12 +476,17 @@ const DatabaseTable = props => {
    * selected document.
    */
   const handleDeleteField = async field => {
+
+    // Get document and unset
+    let d = doc;
+    _.unset(d, field);
+
     try {
       const res = await props.rethink.client
         .db(database)
         .table(table)
         .filter({ id: doc.id })
-        .replace(props.rethink.client.row.without(field))
+        .replace({ ...d })
         .run(props.rethink.connection);
 
       if (res.replaced === 0) return message.error('Unable to remove field.');
