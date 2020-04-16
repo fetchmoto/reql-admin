@@ -5,15 +5,20 @@ import { subscribe } from 'react-contextual';
 import Layout from './layout';
 import routes from './routes';
 
+import rethinkdb from './shared/libs/rethinkdb';
+
 const App = props => {
   const route = useRoutes(routes);
 
+  const startRethink = async () => {
+    const res = await rethinkdb.initialize();
+    console.log(res);
+    if (res.connected === true) props.setRethink(res);
+  }
+
   useEffect(() => {
-
-    // if client is false, initialize rethink
-    if (props.rethink.client === false) props.initializeRethink();
+    startRethink();
   }, []);
-
 
   return (<Layout>{route}</Layout>);
 }
