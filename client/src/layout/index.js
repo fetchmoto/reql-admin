@@ -16,14 +16,86 @@ const defaultCreateTableData = {
   name: ''
 };
 
+const defaultCreateDatabaseData = {
+  name: ''
+};
+
 const ApplicationLayout = props => {
 
   // Local component state
   const [ loading, setLoading ] = useState(true);
   const [ databases, setDatabases ] = useState([]);
   const [ currentDatabase, setCurrentDatabase ] = useState(false);
+
+  // Table creation state
   const [ createTableModalVisible, setCreateTableModalVisible] = useState(false);
   const [ createTableData, setCreateTableData ] = useState(defaultCreateTableData);
+  const [ createTableLoading, setCreateTableLoading ] = useState(false);
+
+  // Database creation state
+  const [ createDatabaseModalVisible, setCreateDatabaseModalVisible ] = useState(false);
+  const [ createDatabaseData, setCreateDatabaseData ] = useState(defaultCreateDatabaseData);
+  const [ createDatabaseLoading, setCreateDatabaseLoading ] = useState(false);
+
+  /**
+   * ======================================
+   * Database Creation Methods
+   * ======================================
+   */
+
+  const openCreateDatabaseModal = () => {
+    setCreateDatabaseModalVisible(true);
+  }
+
+  const closeCreateDatabaseModal = () => {
+    setCreateDatabaseModalVisible(false);
+    setCreateDatabaseData(defaultCreateDatabaseData);
+  }
+
+  const updateCreateDatabaseData = (field, value) => {
+    setCreateDatabaseData({
+      ...createDatabaseData,
+      [field]: value
+    });
+  }
+
+  const handleCreateDatabase = async () => {
+    setCreateDatabaseLoading(true);
+
+    try {
+      // Get the database list
+      const res = await props.rethink.client
+        .dbCreate(createDatabaseData.name)
+        .run(props.rethink.connection);
+
+      console.log(res);
+
+      if (res.dbs_created === 0) {
+        setCreateDatabaseLoading(false);
+        return message.error('Database could not be created.');
+      }
+
+      await retrieveDatabases();
+      message.success('Database was created.');
+
+      setCreateDatabaseModalVisible(false);
+      setCreateDatabaseData(defaultCreateDatabaseData);
+      setCreateDatabaseLoading(false);
+      return true;
+    } catch (error) {
+      console.log(error);
+    }
+
+    setCreateDatabaseLoading(false);
+    message.error('Database could not be created.');
+    return false;
+  }
+
+  /**
+   * ======================================
+   * Table Creation Methods
+   * ======================================
+   */
 
   const openCreateTableModal = database => {
     setCurrentDatabase(database);
@@ -44,6 +116,8 @@ const ApplicationLayout = props => {
   }
 
   const handleCreateTable = async () => {
+    setCreateTableLoading(true);
+
     try {
       // Get the database list
       const res = await props.rethink.client
@@ -52,7 +126,10 @@ const ApplicationLayout = props => {
 
       console.log(res);
 
-      if (res.tables_created === 0) return message.error('Table could not be created.');
+      if (res.tables_created === 0) {
+        setCreateTableLoading(false);
+        return message.error('Table could not be created.');
+      }
 
       await retrieveDatabases();
       message.success('Table was created.');
@@ -60,11 +137,13 @@ const ApplicationLayout = props => {
       setCreateTableModalVisible(false);
       setCurrentDatabase(false);
       setCreateTableData(defaultCreateTableData);
+      setCreateTableLoading(false);
       return true;
     } catch (error) {
       console.log(error);
     }
 
+    setCreateTableLoading(false);
     message.error('Table could not be created.');
     return false;
   }
@@ -157,11 +236,25 @@ const ApplicationLayout = props => {
           <Menu mode="inline" theme="dark" className="layout__navigation" selectable={false}>
             {navigationItems}
           </Menu>
+          <div className="action-button" onClick={openCreateDatabaseModal.bind(this)}>
+            <i className="fas fa-plus-circle"></i>&nbsp;&nbsp; Create Database
+          </div>
         </Sider>
         <Layout className="layout__content">
           {props.children}
         </Layout>
       </Layout>
+
+      {/** Modal for creating a database. **/}
+      <Modal
+        title="Create Database"
+        visible={createDatabaseModalVisible}
+        onOk={handleCreateDatabase.bind(this)}
+        onCancel={closeCreateDatabaseModal.bind(this)}
+        confirmLoading={createDatabaseLoading}
+      >
+        <Input value={createDatabaseData.name} onChange={e => updateCreateDatabaseData('name', e.target.value)} placeholder="Database Name" style={{marginBottom: 15}} />
+      </Modal>
 
       {/** Modal for creating a table. **/}
       <Modal
@@ -169,6 +262,7 @@ const ApplicationLayout = props => {
         visible={createTableModalVisible}
         onOk={handleCreateTable.bind(this)}
         onCancel={closeCreateTableModal.bind(this)}
+        confirmLoading={createTableLoading}
       >
         <Input value={createTableData.name} onChange={e => updateCreateTableData('name', e.target.value)} placeholder="Table Name" style={{marginBottom: 15}} />
       </Modal>

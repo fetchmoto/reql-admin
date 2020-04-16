@@ -47,6 +47,7 @@ body {
   max-width: 300px !important;
   min-width: 300px;
   width: 300px !important;
+  position: relative;
 }
 
 .logo {
@@ -60,4 +61,22 @@ body {
   cursor: pointer;
   transition: .3s ease all;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.action-button {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 25px;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
+  transition: .2s ease all;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
 }
