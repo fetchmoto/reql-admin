@@ -12,6 +12,7 @@ import {
   Popconfirm,
   Row,
   Col,
+  Tooltip,
   message
 } from 'antd';
 
@@ -523,6 +524,14 @@ const DatabaseTable = props => {
           <div className="title">
             <i className="fas fa-table"></i>&nbsp;&nbsp;{table}
             <div className="options">
+              <Tooltip title="Import File">
+                <i className="fas fa-file-import icon"></i>
+              </Tooltip>
+
+              <Tooltip title="Export Table">
+                <i className="fas fa-file-export icon"></i>
+              </Tooltip>
+
               <Popconfirm
                 title="Are you sure delete this table?"
                 onConfirm={handleDeleteTable.bind(this, table)}
@@ -531,7 +540,9 @@ const DatabaseTable = props => {
                 cancelText="No"
                 placement="bottomRight"
               >
-                <i className="fas fa-trash icon"></i>
+                <Tooltip title="Delete Table">
+                  <i className="fas fa-trash icon"></i>
+                </Tooltip>
               </Popconfirm>
             </div>
           </div>
@@ -566,7 +577,9 @@ const DatabaseTable = props => {
                       cancelText="No"
                       placement="bottomRight"
                     >
-                      <i className="fas fa-trash icon"></i>
+                      <Tooltip title="Delete Document" placement="bottomRight">
+                        <i className="fas fa-trash icon"></i>
+                      </Tooltip>
                     </Popconfirm>
                   </div>
                 </div>
@@ -581,7 +594,9 @@ const DatabaseTable = props => {
                           {field}
                         </span>: "{doc[field]}"
                         <div className="options">
-                          <i onClick={openEditFieldModal.bind(this, field)} className="fas fa-pencil-alt icon"></i>
+                          <Tooltip title="Edit" placement="bottom">
+                            <i onClick={openEditFieldModal.bind(this, field)} className="fas fa-pencil-alt icon"></i>
+                          </Tooltip>
                           <Popconfirm
                             title="Are you sure delete this field?"
                             onConfirm={handleDeleteField.bind(this, field)}
@@ -590,7 +605,9 @@ const DatabaseTable = props => {
                             cancelText="No"
                             placement="bottomRight"
                           >
-                            <i className="fas fa-trash icon"></i>
+                            <Tooltip title="Delete" placement="bottomRight">
+                              <i className="fas fa-trash icon"></i>
+                            </Tooltip>
                           </Popconfirm>
                         </div>
                       </li>

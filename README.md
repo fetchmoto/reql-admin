@@ -29,11 +29,11 @@ Below holds information on what was recently done, and what is in the near futur
 - [ ] Create connection screen (Specify websocket address, database information)
 - [ ] Refactor rethink client (Possibly create a react hook)
 - [ ] Figure out why changefeeds are not reporting back once subscribed to.
+- [ ] Filtering on DatabaseTable component
 
-# Roadmap Items
+# Roadmap Features
 - [ ] Import JSON / CSV into Tables
 - [ ] Export table as JSON / CSV
--
 
 # Requirements
 
