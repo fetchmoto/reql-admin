@@ -630,7 +630,7 @@ const DatabaseTable = props => {
         onCancel={closeCreateDocumentModal.bind(this)}
       >
         <Row>
-          <Col span={24} style={{padding: 5}}>
+          <Col span={24} className="modal-row">
             <Input addonBefore="ID" value={createDocumentData.id} onChange={e => updateCreateDocumentData('id', e.target.value)} placeholder="Document ID (Leave blank to generate)" style={{marginBottom: 15}} />
           </Col>
         </Row>
@@ -639,10 +639,10 @@ const DatabaseTable = props => {
           createDocumentData.fields.map((field, i) => {
             return (
               <Row>
-                <Col span={11} style={{padding: 5}}>
+                <Col span={11} className="modal-row">
                   <Input addonBefore="Field" value={field.field} onChange={e => updateCreateDocumentFieldName(i, e.target.value)} placeholder="Field" style={{marginBottom: 15}} />
                 </Col>
-                <Col span={11} style={{padding: 5}}>
+                <Col span={11} className="modal-row">
                   <Input addonBefore="Value" value={field.value} onChange={e => updateCreateDocumentData(i, e.target.value)} placeholder="Value" style={{marginBottom: 15}} />
                 </Col>
                 <Col span={2} style={{padding: 5, textAlign: 'right'}}>
@@ -663,10 +663,10 @@ const DatabaseTable = props => {
         onCancel={closeCreateFieldModal.bind(this)}
       >
         <Row>
-          <Col span={12} style={{padding: 5}}>
+          <Col span={12} className="modal-row">
             <Input addonBefore="Field" value={createFieldData.field} onChange={e => updateCreateFieldData('field', e.target.value)} placeholder="Field" style={{marginBottom: 15}} />
           </Col>
-          <Col span={12} style={{padding: 5}}>
+          <Col span={12} className="modal-row">
             <Input addonBefore="Value" value={createFieldData.value} onChange={e => updateCreateFieldData('value', e.target.value)} placeholder="Value" style={{marginBottom: 15}} />
           </Col>
         </Row>
@@ -680,10 +680,10 @@ const DatabaseTable = props => {
         onCancel={closeEditFieldModal.bind(this)}
       >
         <Row>
-          <Col span={12} style={{padding: 5}}>
+          <Col span={12} className="modal-row">
             <Input addonBefore="Field" value={editFieldData.field} onChange={e => updateEditFieldData('field', e.target.value)} placeholder="Field" style={{marginBottom: 15}} />
           </Col>
-          <Col span={12} style={{padding: 5}}>
+          <Col span={12} className="modal-row">
             <Input addonBefore="Value" value={editFieldData.value} onChange={e => updateEditFieldData('value', e.target.value)} placeholder="Value" style={{marginBottom: 15}} />
           </Col>
         </Row>
