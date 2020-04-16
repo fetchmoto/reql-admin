@@ -4,7 +4,6 @@ A future Administration GUI for RethinkDB.
 
 ----
 **VERY EARLY STAGES OF DEVELOPMENT, CHECK BACK FOR UPDATES**
-
 ----
 
 # Contributions
@@ -15,6 +14,7 @@ Want to contribute? Feel free to submit pull requests, create issues, and help w
 
 Below holds information on what was recently done, and what is in the near future.
 
+- [ ] Come up with a home page idea that has nice features
 - [ ] Handle when websocket-server is not online
 - [X] Initialize Rethink Client in App State
 - [X] List databases and their tables.
@@ -29,6 +29,11 @@ Below holds information on what was recently done, and what is in the near futur
 - [ ] Create connection screen (Specify websocket address, database information)
 - [ ] Refactor rethink client (Possibly create a react hook)
 - [ ] Figure out why changefeeds are not reporting back once subscribed to.
+
+# Roadmap Items
+- [ ] Import JSON / CSV into Tables
+- [ ] Export table as JSON / CSV
+-
 
 # Requirements
 
