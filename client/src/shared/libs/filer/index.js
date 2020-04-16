@@ -1,5 +1,9 @@
 const proto = {
 
+  /**
+   * Takes a object of data and converts it to a CSV formatted
+   * string.
+   */
   csv(objArray) {
     let array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
     let str = '';
@@ -16,6 +20,10 @@ const proto = {
     return str;
   },
 
+  /**
+   * Exports a given array of data as a CSV or 
+   * JSON file.
+   */
   export (type = 'csv', headers, items, title) {
 
     // Align headers

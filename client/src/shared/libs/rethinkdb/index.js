@@ -22,6 +22,10 @@ const _proto = {
   // Custom Events
   events: {},
 
+  /**
+   * Initializes a connection to a
+   * rethinkdb-websocket-server.
+   */
   async initialize (configuration = {}) {
 
     /**
@@ -64,6 +68,10 @@ const _proto = {
     };
   },
 
+  /**
+   * The actual connection is made here and
+   * returned.
+   */
   async connect (config) {
     try {
       const connection = await rClient.connect({
@@ -83,6 +91,11 @@ const _proto = {
     return false;
   },
 
+  /**
+   * Attempts a reconnect to the websocket-server if
+   * the connection is dropped after the specifed amount
+   * of seconds in the configuration.
+   */
   reconnect () {
     const self = this;
     const delaySeconds = (this.delayedReconnection * 1000);
@@ -98,12 +111,18 @@ const _proto = {
     }, delaySeconds);
   },
 
+  /**
+   * Set custom events
+   */
   setEvents (events) {
     const self = this;
 
     if (events.onClose) this.events.onClose = events.onClose;
   },
 
+  /**
+   * Activates events for the connection.
+   */
   useEvents () {
     const self = this;
 

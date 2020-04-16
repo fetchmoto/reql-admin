@@ -14,6 +14,10 @@ export const forceReload = () => state => {
   return { forceReloadKey: key };
 }
 
+/**
+ * Sets the rethinkdb client to the global state for all
+ * subscribed components to use.
+ */
 export const setRethink = rethink => state => {
   return { rethink };
 }
