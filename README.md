@@ -36,6 +36,7 @@ Below holds information on what was recently done, and what is in the near futur
 - [ ] Renaming a table
 - [ ] Renaming a database
 - [X] Handling sub-documents display
+- [ ] Code navigation from scratch for better option layout
 
 # Roadmap Features
 - [ ] Import JSON / CSV into Tables
