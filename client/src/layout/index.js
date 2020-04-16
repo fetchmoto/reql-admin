@@ -81,8 +81,11 @@ const ApplicationLayout = props => {
     if (database.name !== 'rethinkdb') {
       return (
         <SubMenu key={index} title={database.name}>
+          <Menu.Item onClick={() => console.log('Clicked add')} key={database.name + '-add'}>
+            <i className="fas fa-plus-circle"></i>&nbsp;&nbsp; Create Table
+          </Menu.Item>
           {database.tables.map((table, index) => {
-            return (<Menu.Item onClick={() => navigate(`/database/${database.name}/table/${table}`)} key={index}>{table}</Menu.Item>)
+            return (<Menu.Item onClick={() => navigate(`/database/${database.name}/table/${table}`)} key={index}><i className="fas fa-table"></i>&nbsp;&nbsp;{table}</Menu.Item>)
           })}
         </SubMenu>
       );
@@ -94,7 +97,7 @@ const ApplicationLayout = props => {
       <Layout className="layout__root">
         <Sider className="site-layout-background">
           <div className="logo">ReQL Admin</div>
-          <Menu mode="inline" theme="dark" className="layout__navigation">
+          <Menu mode="inline" theme="dark" className="layout__navigation" selectable={false}>
             {navigationItems}
           </Menu>
         </Sider>

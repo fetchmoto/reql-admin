@@ -13,7 +13,7 @@
     height: 50px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     line-height: 50px;
-    text-indent: 15px;
+    text-indent: 7px;
     font-size: 18px;
     font-weight: bold;
     background: #fafafa;
@@ -24,6 +24,10 @@
       position: absolute;
       right: 15px;
       top: 0;
+
+      i {
+        cursor: pointer;
+      }
     }
   }
 
@@ -108,7 +112,7 @@
     background: #fafafa;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     line-height: 50px;
-    text-indent: 15px;
+    text-indent: 7px;
     font-size: 18px;
     font-weight: bold;
     position: relative;
@@ -118,6 +122,12 @@
       position: absolute;
       right: 15px;
       top: 0;
+
+      i {
+        color: rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+        font-size: 24px;
+      }
     }
   }
 
