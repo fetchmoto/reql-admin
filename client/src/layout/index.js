@@ -208,8 +208,11 @@ const ApplicationLayout = props => {
   // If loading, return a loader component.
   if (loading) return (<Loader />);
 
+  const openMenus = [];
+
   // Build the navigation items to be rendered
   const navigationItems = databases.map((database, index) => {
+    openMenus.push(index.toString());
     if (database.name !== 'rethinkdb') {
       return (
         <SubMenu key={index} title={database.name}>
@@ -236,7 +239,7 @@ const ApplicationLayout = props => {
       <Layout className="layout__root">
         <Sider className="site-layout-background">
           <div className="logo">ReQL Admin</div>
-          <Menu mode="inline" theme="dark" className="layout__navigation" selectable={false}>
+          <Menu openKeys={openMenus} mode="inline" theme="dark" className="layout__navigation" selectable={false}>
             {navigationItems}
           </Menu>
           <div className="action-button" onClick={openCreateDatabaseModal.bind(this)}>

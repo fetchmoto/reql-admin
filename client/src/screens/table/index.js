@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { navigate } from 'hookrouter';
 import { subscribe } from 'react-contextual';
 import _ from 'lodash';
+import filer from '../../shared/libs/filer';
 
 // Ant Design Components
 import {
@@ -182,10 +183,10 @@ const DatabaseTable = props => {
    * Create Field data methods. Handles opening modals,
    * updating data objects, etc.
    */
-  const openCreateFieldModal = (field) => {
+  const openCreateFieldModal = (field = false) => {
     setCreateFieldData({
       ...createFieldData,
-      path: field
+      path: (typeof field === 'string' ? field : false)
     });
 
     setCreateFieldVisible(true);
@@ -671,6 +672,8 @@ const DatabaseTable = props => {
     }
   });
 
+  const headers = Object.keys(data[0]).map(d => d);
+
   return (
     <>
       <div className="database-table__container">
@@ -683,7 +686,7 @@ const DatabaseTable = props => {
               </Tooltip>
 
               <Tooltip title="Export Table">
-                <i className="fas fa-file-export icon"></i>
+                <i onClick={() => filer.export('json', headers, data, table)} className="fas fa-file-export icon"></i>
               </Tooltip>
 
               <Popconfirm
