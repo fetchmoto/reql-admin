@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { navigate } from 'hookrouter';
 import { subscribe } from 'react-contextual';
 import {
   Table,
@@ -200,6 +201,31 @@ const DatabaseTable = props => {
    * Naming convention should be that of
    * handle<ActionName> for quick reference.
    */
+
+  /**
+   * Handles the editing of a field for the current
+   * selected document.
+   */
+  const handleDeleteTable = async t => {
+    try {
+      const res = await props.rethink.client
+        .db(database)
+        .tableDrop(t)
+        .run(props.rethink.connection);
+
+      if (res.tables_dropped === 0) return message.error('Error removing table');
+
+      props.forceReload();
+      navigate('/');
+      message.success('Table was removed');
+      return true;
+    } catch (error) {
+      console.log(error);
+    }
+
+    message.error('There was an error');
+    return false;
+  }
 
   /**
    * Handles the editing of a field for the current
@@ -497,9 +523,16 @@ const DatabaseTable = props => {
           <div className="title">
             <i className="fas fa-table"></i>&nbsp;&nbsp;{table}
             <div className="options">
-              <Dropdown trigger="click" overlay={tableMenu.bind(this)}>
-                <Button shape="circle"><EllipsisOutlined /></Button>
-              </Dropdown>
+              <Popconfirm
+                title="Are you sure delete this table?"
+                onConfirm={handleDeleteTable.bind(this, table)}
+                onCancel={() => console.log('canceled')}
+                okText="Yes"
+                cancelText="No"
+                placement="bottomRight"
+              >
+                <i className="fas fa-trash icon"></i>
+              </Popconfirm>
             </div>
           </div>
           <div className="add" onClick={openCreateDocumentModal.bind(this)}><i className="fas fa-plus-circle"></i>&nbsp;&nbsp; Add Document</div>
@@ -550,11 +583,12 @@ const DatabaseTable = props => {
                         <div className="options">
                           <i onClick={openEditFieldModal.bind(this, field)} className="fas fa-pencil-alt icon"></i>
                           <Popconfirm
-                            title="Are you sure delete this document?"
+                            title="Are you sure delete this field?"
                             onConfirm={handleDeleteField.bind(this, field)}
                             onCancel={() => console.log('canceled')}
                             okText="Yes"
                             cancelText="No"
+                            placement="bottomRight"
                           >
                             <i className="fas fa-trash icon"></i>
                           </Popconfirm>

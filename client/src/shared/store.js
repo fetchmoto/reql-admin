@@ -9,5 +9,7 @@ export default {
     error: false
   },
 
+  forceReloadKey: 0,
+
   ...actions
 };

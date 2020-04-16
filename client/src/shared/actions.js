@@ -4,6 +4,11 @@ export const setTitle = title => state => {
   return { title };
 }
 
+export const forceReload = () => state => {
+  let key = Math.floor((Math.random() * 10000) + 1);
+  return { forceReloadKey: key };
+}
+
 export const initializeRethink = () => async state => {
   let db = false;
   let connected = false;
