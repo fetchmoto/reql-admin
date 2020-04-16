@@ -587,12 +587,14 @@ const DatabaseTable = props => {
                   <i className="fas fa-plus-circle"></i>&nbsp;&nbsp; Add Field
                 </div>
                 <ul>
+                  {/** Outputting the document fields and values **/}
+
                   {Object.keys(doc).map((field, index) => {
                     return (
                       <li key={index}>
                         <span className="field">
                           {field}
-                        </span>: "{doc[field]}"
+                        </span>: "{(doc[field] instanceof Object ? '{ ... }' : doc[field] instanceof Array ? '[ ... ]' : doc[field])}"
                         <div className="options">
                           <Tooltip title="Edit" placement="bottom">
                             <i onClick={openEditFieldModal.bind(this, field)} className="fas fa-pencil-alt icon"></i>
@@ -629,7 +631,7 @@ const DatabaseTable = props => {
       >
         <Row>
           <Col span={24} style={{padding: 5}}>
-            <Input value={createDocumentData.id} onChange={e => updateCreateDocumentData('id', e.target.value)} placeholder="Document ID (Leave blank to generate)" style={{marginBottom: 15}} />
+            <Input addonBefore="ID" value={createDocumentData.id} onChange={e => updateCreateDocumentData('id', e.target.value)} placeholder="Document ID (Leave blank to generate)" style={{marginBottom: 15}} />
           </Col>
         </Row>
 
@@ -638,10 +640,10 @@ const DatabaseTable = props => {
             return (
               <Row>
                 <Col span={11} style={{padding: 5}}>
-                  <Input value={field.field} onChange={e => updateCreateDocumentFieldName(i, e.target.value)} placeholder="Field" style={{marginBottom: 15}} />
+                  <Input addonBefore="Field" value={field.field} onChange={e => updateCreateDocumentFieldName(i, e.target.value)} placeholder="Field" style={{marginBottom: 15}} />
                 </Col>
                 <Col span={11} style={{padding: 5}}>
-                  <Input value={field.value} onChange={e => updateCreateDocumentData(i, e.target.value)} placeholder="Value" style={{marginBottom: 15}} />
+                  <Input addonBefore="Value" value={field.value} onChange={e => updateCreateDocumentData(i, e.target.value)} placeholder="Value" style={{marginBottom: 15}} />
                 </Col>
                 <Col span={2} style={{padding: 5, textAlign: 'right'}}>
                   <i style={{cursor: 'pointer'}} onClick={removeCreateDocumentDataField.bind(this, i)} className="fas fa-trash icon"></i>
@@ -660,8 +662,14 @@ const DatabaseTable = props => {
         onOk={handleAddField.bind(this)}
         onCancel={closeCreateFieldModal.bind(this)}
       >
-        <Input value={createFieldData.field} onChange={e => updateCreateFieldData('field', e.target.value)} placeholder="Field" style={{marginBottom: 15}} />
-        <Input value={createFieldData.value} onChange={e => updateCreateFieldData('value', e.target.value)} placeholder="Value" style={{marginBottom: 15}} />
+        <Row>
+          <Col span={12} style={{padding: 5}}>
+            <Input addonBefore="Field" value={createFieldData.field} onChange={e => updateCreateFieldData('field', e.target.value)} placeholder="Field" style={{marginBottom: 15}} />
+          </Col>
+          <Col span={12} style={{padding: 5}}>
+            <Input addonBefore="Value" value={createFieldData.value} onChange={e => updateCreateFieldData('value', e.target.value)} placeholder="Value" style={{marginBottom: 15}} />
+          </Col>
+        </Row>
       </Modal>
 
       {/** Modal for editing a field. **/}
@@ -671,8 +679,14 @@ const DatabaseTable = props => {
         onOk={handleEditField.bind(this)}
         onCancel={closeEditFieldModal.bind(this)}
       >
-        <Input value={editFieldData.field} onChange={e => updateEditFieldData('field', e.target.value)} placeholder="Field" style={{marginBottom: 15}} />
-        <Input value={editFieldData.value} onChange={e => updateEditFieldData('value', e.target.value)} placeholder="Value" style={{marginBottom: 15}} />
+        <Row>
+          <Col span={12} style={{padding: 5}}>
+            <Input addonBefore="Field" value={editFieldData.field} onChange={e => updateEditFieldData('field', e.target.value)} placeholder="Field" style={{marginBottom: 15}} />
+          </Col>
+          <Col span={12} style={{padding: 5}}>
+            <Input addonBefore="Value" value={editFieldData.value} onChange={e => updateEditFieldData('value', e.target.value)} placeholder="Value" style={{marginBottom: 15}} />
+          </Col>
+        </Row>
       </Modal>
     </>
   );

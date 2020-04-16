@@ -20,8 +20,9 @@ body {
   .layout__navigation {
     height: 100%;
     border-radius: 0;
-    height: 100vh;
+    height: calc(100vh - 100px);
     background: #001529;
+    overflow-y: auto;
   }
 
   .layout__content {
@@ -48,6 +49,7 @@ body {
   min-width: 300px;
   width: 300px !important;
   position: relative;
+  padding-bottom: 50px;
 }
 
 .logo {
@@ -68,7 +70,9 @@ body {
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: 25px;
+  padding: 0 25px;
+  height: 50px;
+  line-height: 50px;
   color: #fff;
   font-size: 16px;
   cursor: pointer;

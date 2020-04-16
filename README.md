@@ -24,12 +24,15 @@ Below holds information on what was recently done, and what is in the near futur
 - [X] Add ability to add new document
 - [X] Add options for each table document
 - [X] Ability to delete table
-- [ ] Ability to create new database
+- [X] Ability to create new database
 - [X] Ability to create new tables
 - [ ] Create connection screen (Specify websocket address, database information)
 - [ ] Refactor rethink client (Possibly create a react hook)
 - [ ] Figure out why changefeeds are not reporting back once subscribed to.
 - [ ] Filtering on DatabaseTable component
+- [ ] Renaming a table
+- [ ] Renaming a database
+- [ ] Handling sub-documents display
 
 # Roadmap Features
 - [ ] Import JSON / CSV into Tables
