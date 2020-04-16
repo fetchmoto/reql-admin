@@ -231,3 +231,21 @@
     }
   }
 }
+
+.child {
+  padding-right: 0 !important;
+  height: auto !important;
+
+  li {
+
+    padding-left: 25px !important;
+    padding-right: 0 !important;
+    border-left: 1px dashed rgba(0, 0, 0, 0.1);
+
+    border-bottom: 0 !important;
+
+    .options {
+      right: 0 !important;
+    }
+  }
+}

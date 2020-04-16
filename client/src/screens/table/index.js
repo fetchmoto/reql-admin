@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { navigate } from 'hookrouter';
 import { subscribe } from 'react-contextual';
+import _ from 'lodash';
 
 // Ant Design Components
 import {
@@ -10,6 +11,7 @@ import {
   Row,
   Col,
   Tooltip,
+  Select,
   message
 } from 'antd';
 
@@ -19,7 +21,18 @@ import './table.scss';
 
 // Default data objects
 const defaultEditData = { field: '', value: '' };
-const defaultCreateData = { field: '', value: '' };
+
+const defaultCreateData = {
+  type: 'field', // or collection
+  collection: '',
+  fields: [
+    {
+      field: '',
+      value: ''
+    }
+  ]
+};
+
 const defaultCreateDocumentData = {
   id: '',
   fields: [
@@ -29,6 +42,8 @@ const defaultCreateDocumentData = {
     }
   ]
 };
+
+const { Option } = Select;
 
 const DatabaseTable = props => {
   const { database, table } = props;
@@ -145,7 +160,7 @@ const DatabaseTable = props => {
   const openEditFieldModal = key => {
     setEditFieldData({
       field: key,
-      value: doc[key]
+      value: (key.includes('.') ? _.get(doc, key) : doc[key])
     });
     setEditFieldVisible(true);
   }
@@ -175,11 +190,73 @@ const DatabaseTable = props => {
     setCreateFieldVisible(false);
   }
 
-  const updateCreateFieldData = (field, value) => {
+  const removeCreateFieldDataField = key => {
+    let fields = createFieldData.fields;
+    fields.splice(key, 1);
+
     setCreateFieldData({
       ...createFieldData,
-      [field]: value
+      fields: [ ...fields ]
     });
+  }
+
+  const addCreateFieldDataField = () => {
+    let fields = createFieldData.fields;
+
+    fields.push({
+      field: '',
+      value: ''
+    });
+
+    setCreateFieldData({
+      ...createFieldData,
+      fields: [ ...fields ]
+    });
+  }
+
+  const updateCreateFieldFieldName = (i, value) => {
+    let fields = createFieldData.fields;
+    fields[i].field = value;
+
+    setCreateFieldData({
+      ...createFieldData,
+      fields: [ ...fields ]
+    });
+  }
+
+  const updateCreateFieldData = (field, value) => {
+    if (field === 'type') {
+      if (value === 'field') {
+        setCreateFieldData({
+          ...createFieldData,
+          type: value,
+          fields: [
+            {
+              field: '',
+              value: ''
+            }
+          ]
+        });
+      } else {
+        setCreateFieldData({
+          ...createFieldData,
+          type: value
+        });
+      }
+    } else if (field === 'collection') {
+      setCreateFieldData({
+        ...createFieldData,
+        collection: value
+      });
+    } else {
+      let fields = createFieldData.fields;
+      fields[field].value = value;
+
+      setCreateFieldData({
+        ...createFieldData,
+        fields: [ ...fields ]
+      });
+    }
   }
 
   /**
@@ -299,14 +376,18 @@ const DatabaseTable = props => {
    * selected document.
    */
   const handleEditField = async () => {
+    let field = editFieldData.field;
+    let d = doc;
+
+    if (field.includes('.')) d = _.set(d, field, editFieldData.value);
+    else d[field] = editFieldData.value;
+
     try {
       const res = await props.rethink.client
         .db(database)
         .table(table)
         .filter({ id: doc.id })
-        .update({
-          [editFieldData.field]: editFieldData.value
-        })
+        .update(d)
         .run(props.rethink.connection);
 
       if (res.replaced === 0) return message.error('Unable to update field.');
@@ -336,14 +417,28 @@ const DatabaseTable = props => {
    * selected document.
    */
   const handleAddField = async () => {
+    let d = {};
+
+    /**
+     * If it's a collection, set the collection
+     * key, then add all fields to it.
+     */
+    if (createFieldData.type === 'collection') {
+      d[createFieldData.collection] = {};
+      for (let i = 0; i < createFieldData.fields.length; i++) {
+        d[createFieldData.collection][createFieldData.fields[i].field] = createFieldData.fields[i].value;
+      }
+    } else {
+      if (createFieldData.fields.length)
+        d[createFieldData.fields[0].field] = createFieldData.fields[0].value;
+    }
+
     try {
       const res = await props.rethink.client
         .db(database)
         .table(table)
         .filter({ id: doc.id })
-        .update({
-          [createFieldData.field]: createFieldData.value
-        })
+        .update(d)
         .run(props.rethink.connection);
 
       if (res.replaced === 0) return message.error('Unable to add field.');
@@ -447,6 +542,95 @@ const DatabaseTable = props => {
     setData([]);
   }
 
+  /**
+   * Infinite iteration for documents that have sub-collections.
+   */
+  const iterate = (obj, parent = '') => {
+    return Object.keys(obj).map((key, index) => {
+      let field = [];
+      let subs = [];
+
+      // If it's an object, build the subs.
+      if (typeof obj[key] === 'object') {
+        subs = iterate(obj[key], (parent ? `${parent}.${key}` : key));
+
+        field = buildDocumentFieldDisplay(
+          obj,
+          (parent ? `${parent}.${key}` : key),
+          '',
+          index,
+          subs
+        );
+      } else {
+        field = buildDocumentFieldDisplay(
+          obj,
+          (parent ? `${parent}.${key}` : key),
+          obj[key],
+          index
+        );
+      }
+
+      return (<>{field}</>);
+    })
+  }
+
+  /**
+   * Builds the field display for a document.
+   */
+  const buildDocumentFieldDisplay = (d, field, value, index, subs = []) => {
+
+    // Get the value of the field.
+    const val = _.get(doc, field);
+
+    return (
+      <li key={index}>
+        <span className="field">
+          {field}
+        </span>: {(val instanceof Array || val instanceof Object ? '' : `"${val}"`)}
+        <div className="options">
+          {
+            subs.length ?
+            (
+              <Tooltip title="Add Field" placement="bottom">
+                <i
+                  onClick={openEditFieldModal.bind(this, field)}
+                  className="fas fa-plus icon"
+                />
+              </Tooltip>
+            ) :
+            (
+              <Tooltip title="Edit" placement="bottom">
+                <i
+                  onClick={openEditFieldModal.bind(this, field)}
+                  className="fas fa-pencil-alt icon"
+                />
+              </Tooltip>
+            )
+          }
+          <Popconfirm
+            title="Are you sure delete this field?"
+            onConfirm={handleDeleteField.bind(this, field)}
+            onCancel={() => console.log('canceled')}
+            okText="Yes"
+            cancelText="No"
+            placement="bottomRight"
+          >
+            <Tooltip title="Delete" placement="bottomRight">
+              <i className="fas fa-trash icon"></i>
+            </Tooltip>
+          </Popconfirm>
+        </div>
+
+
+        {subs.length ? (
+          <ul className="child">
+            {subs}
+          </ul>
+        ) : ''}
+      </li>
+    )
+  }
+
   // Watch connection, current table and database.
   useEffect(() => {
 
@@ -548,35 +732,7 @@ const DatabaseTable = props => {
                 <ul>
                   {/** Outputting the document fields and values **/}
 
-                  {Object.keys(doc).map((field, index) => {
-                    return (
-                      <li key={index}>
-                        <span className="field">
-                          {field}
-                        </span>: "{(doc[field] instanceof Object ? '{ ... }' : doc[field] instanceof Array ? '[ ... ]' : doc[field])}"
-                        <div className="options">
-                          <Tooltip title="Edit" placement="bottom">
-                            <i
-                              onClick={openEditFieldModal.bind(this, field)}
-                              className="fas fa-pencil-alt icon"
-                            />
-                          </Tooltip>
-                          <Popconfirm
-                            title="Are you sure delete this field?"
-                            onConfirm={handleDeleteField.bind(this, field)}
-                            onCancel={() => console.log('canceled')}
-                            okText="Yes"
-                            cancelText="No"
-                            placement="bottomRight"
-                          >
-                            <Tooltip title="Delete" placement="bottomRight">
-                              <i className="fas fa-trash icon"></i>
-                            </Tooltip>
-                          </Popconfirm>
-                        </div>
-                      </li>
-                    )
-                  })}
+                  {iterate(doc)}
                 </ul>
               </>
             )
@@ -651,25 +807,78 @@ const DatabaseTable = props => {
         onCancel={closeCreateFieldModal.bind(this)}
       >
         <Row>
-          <Col span={12} className="modal-row">
-            <Input
-              addonBefore="Field"
-              value={createFieldData.field}
-              onChange={e => updateCreateFieldData('field', e.target.value)}
-              placeholder="Field"
-              style={{marginBottom: 15}}
-            />
+          <Col span={24} className="modal-row">
+          <Select style={{width: '100%'}} defaultValue={createFieldData.type} onChange={val => updateCreateFieldData('type', val)}>
+            <Option value="field">Field</Option>
+            <Option value="collection">Collection</Option>
+          </Select>
           </Col>
-          <Col span={12} className="modal-row">
-            <Input
-              addonBefore="Value"
-              value={createFieldData.value}
-              onChange={e => updateCreateFieldData('value', e.target.value)}
-              placeholder="Value"
-              style={{marginBottom: 15}}
-            />
-          </Col>
+          <hr />
         </Row>
+        {
+          createFieldData.type === 'collection' ?
+          (
+            <Row>
+              <Col span={24} className="modal-row">
+                <Input
+                  addonBefore="Collection Name"
+                  value={createFieldData.collection}
+                  onChange={e => updateCreateFieldData('collection', e.target.value)}
+                  placeholder="Collection"
+                  style={{marginBottom: 15}}
+                />
+              </Col>
+            </Row>
+          ) : null
+        }
+        {
+          createFieldData.fields.map((field, i) => {
+            return (
+              <Row>
+                <Col span={(createFieldData.type === 'collection' ? 11 : 12)} className="modal-row">
+                  <Input
+                    addonBefore="Field"
+                    value={field.field}
+                    onChange={e => updateCreateFieldFieldName(i, e.target.value)}
+                    placeholder="Field"
+                    style={{marginBottom: 15}}
+                  />
+                </Col>
+                <Col span={(createFieldData.type === 'collection' ? 11 : 12)} className="modal-row">
+                  <Input
+                    addonBefore="Value"
+                    value={field.value}
+                    onChange={e => updateCreateFieldData(i, e.target.value)}
+                    placeholder="Value"
+                    style={{marginBottom: 15}}
+                  />
+                </Col>
+                {
+                  createFieldData.type === 'collection' ?
+                  (
+                    <Col span={2} style={{padding: 5, textAlign: 'right'}}>
+                      <i
+                        style={{cursor: 'pointer'}}
+                        onClick={removeCreateFieldDataField.bind(this, i)}
+                        className="fas fa-trash icon"
+                      />
+                    </Col>
+                  ) : null
+                }
+              </Row>
+            )
+          })
+        }
+        {
+          createFieldData.type === 'collection' ?
+          (
+            <Row>
+              <Col span={24} className="modal-row">
+                <span className="add-row" onClick={addCreateFieldDataField.bind(this)}>Add Field</span>
+              </Col>
+            </Row>
+          ) : null
+        }
       </Modal>
 
       {/** Modal for editing a field. **/}
