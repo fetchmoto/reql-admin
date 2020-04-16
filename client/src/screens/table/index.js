@@ -25,6 +25,7 @@ const defaultEditData = { field: '', value: '' };
 const defaultCreateData = {
   type: 'field', // or collection
   collection: '',
+  path: false,
   fields: [
     {
       field: '',
@@ -181,7 +182,12 @@ const DatabaseTable = props => {
    * Create Field data methods. Handles opening modals,
    * updating data objects, etc.
    */
-  const openCreateFieldModal = () => {
+  const openCreateFieldModal = (field) => {
+    setCreateFieldData({
+      ...createFieldData,
+      path: field
+    });
+
     setCreateFieldVisible(true);
   }
 
@@ -417,20 +423,22 @@ const DatabaseTable = props => {
    * selected document.
    */
   const handleAddField = async () => {
-    let d = {};
+    let d = doc;
 
     /**
      * If it's a collection, set the collection
      * key, then add all fields to it.
      */
     if (createFieldData.type === 'collection') {
-      d[createFieldData.collection] = {};
+      let path = (createFieldData.path ? createFieldData.path + '.' : '') + createFieldData.collection;
       for (let i = 0; i < createFieldData.fields.length; i++) {
-        d[createFieldData.collection][createFieldData.fields[i].field] = createFieldData.fields[i].value;
+        d = _.set(d, `${path}.${createFieldData.fields[i].field}`, createFieldData.fields[i].value);
       }
     } else {
+      let path = (createFieldData.path ? createFieldData.path : '');
+
       if (createFieldData.fields.length)
-        d[createFieldData.fields[0].field] = createFieldData.fields[0].value;
+        d = _.set(d, `${path}.${createFieldData.fields[0].field}`, createFieldData.fields[0].value);
     }
 
     try {
@@ -593,7 +601,7 @@ const DatabaseTable = props => {
             (
               <Tooltip title="Add Field" placement="bottom">
                 <i
-                  onClick={openEditFieldModal.bind(this, field)}
+                  onClick={openCreateFieldModal.bind(this, field)}
                   className="fas fa-plus icon"
                 />
               </Tooltip>
@@ -837,7 +845,7 @@ const DatabaseTable = props => {
               <Row>
                 <Col span={(createFieldData.type === 'collection' ? 11 : 12)} className="modal-row">
                   <Input
-                    addonBefore="Field"
+                    addonBefore={(createFieldData.path ? (<span>{createFieldData.path}.{(createFieldData.collection ? `${createFieldData.collection}.` : '')}`</span>) : 'Field')}
                     value={field.field}
                     onChange={e => updateCreateFieldFieldName(i, e.target.value)}
                     placeholder="Field"
