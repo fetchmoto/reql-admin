@@ -23,7 +23,6 @@ export const forceReload = () => state => {
 export const initializeRethink = () => async state => {
   let db = false;
   let connected = false;
-  let connection = null;
   let error = false;
 
   try {
@@ -35,7 +34,6 @@ export const initializeRethink = () => async state => {
     });
 
     connected = true;
-    connection = db;
   } catch (err) {
     error = err;
     console.log(err);

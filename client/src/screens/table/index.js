@@ -4,11 +4,6 @@ import { subscribe } from 'react-contextual';
 
 // Ant Design Components
 import {
-  Table,
-  PageHeader,
-  Button,
-  Menu,
-  Dropdown,
   Modal,
   Input,
   Popconfirm,
@@ -17,9 +12,6 @@ import {
   Tooltip,
   message
 } from 'antd';
-
-// Ant Design Icons
-import { EllipsisOutlined } from '@ant-design/icons';
 
 // Local Imports
 import { Loader } from '../../shared/components';
@@ -455,33 +447,16 @@ const DatabaseTable = props => {
     setData([]);
   }
 
-  /**
-   * @TODO: Figure out why the following logic
-   * is not returning anything onChange. Seems to be a
-   * websocket issue
-   */
-  const subscribe = () => {
-    console.log('subscribed');
-
-    props.rethink.client
-      .db(database)
-      .table(table)
-      .changes({includeInitial: true})
-      .run(props.rethink.connection, (error, changes) => {
-        console.log('Changes discovered!');
-      });
-  }
-
   // Watch connection, current table and database.
   useEffect(() => {
 
     // If rethink is connected, and databases have not been pulled.
     if (props.rethink.connected === true) {
       retrieveTableData();
-      // subscribe();
       setDoc(false);
     }
 
+  // eslint-disable-next-line
   }, [props.rethink.connected, table]);
 
   // If loading, return a loader component.
@@ -498,20 +473,6 @@ const DatabaseTable = props => {
       key: i
     }
   });
-
-  // Menu for table
-  const tableMenu = () => (
-    <Menu>
-      <Menu.Item onClick={() => console.log('test')}>Delete Table</Menu.Item>
-    </Menu>
-  );
-
-  // Menu for document
-  const documentMenu = () => (
-    <Menu>
-      <Menu.Item onClick={() => console.log('test')}>Delete Document</Menu.Item>
-    </Menu>
-  );
 
   return (
     <>
@@ -675,7 +636,11 @@ const DatabaseTable = props => {
             )
           })
         }
-        <a onClick={addCreateDocumentDataField.bind(this)}>Add Field</a>
+        <Row>
+          <Col span={24} className="modal-row">
+            <span className="add-row" onClick={addCreateDocumentDataField.bind(this)}>Add Field</span>
+          </Col>
+        </Row>
       </Modal>
 
       {/** Modal for adding a field. **/}
@@ -730,7 +695,7 @@ const DatabaseTable = props => {
               value={editFieldData.value}
               onChange={e => updateEditFieldData('value', e.target.value)}
               placeholder="Value"
-              style={{marginBottom: 15}} 
+              style={{marginBottom: 15}}
             />
           </Col>
         </Row>

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { subscribe } from 'react-contextual';
+import React from 'react';
 
 import Home from './screens/home';
 import Table from './screens/table';

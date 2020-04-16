@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { subscribe } from 'react-contextual';
 import { navigate } from 'hookrouter';
-import { Layout, Menu, Breadcrumb, Modal, Input, Button, message } from 'antd';
+import { Layout, Menu, Modal, Input, message } from 'antd';
 
 // Local imports
 import 'antd/dist/antd.css';
@@ -10,7 +10,7 @@ import { Loader } from '../shared/components';
 
 // Sub components
 const { SubMenu } = Menu;
-const { Header, Content, Sider } = Layout;
+const { Sider } = Layout;
 
 const defaultCreateTableData = {
   name: ''
@@ -273,7 +273,7 @@ const ApplicationLayout = props => {
         confirmLoading={createTableLoading}
       >
         <Input
-          value={createTableData.name} 
+          value={createTableData.name}
           onChange={e => updateCreateTableData('name', e.target.value)}
           placeholder="Table Name"
           style={{marginBottom: 15}}
