@@ -4,11 +4,22 @@ export const setTitle = title => state => {
   return { title };
 }
 
+/**
+ * Set forceReloadKey to a random number.
+ * This helps when the navigation needs to re-pull databases
+ * and tables.
+ */
 export const forceReload = () => state => {
   let key = Math.floor((Math.random() * 10000) + 1);
   return { forceReloadKey: key };
 }
 
+/**
+ * TODO: Figure out a way to possibly turn this into
+ * some type of react hook:
+ *
+ * const reql = useRethink({host, port, path, source})
+ */
 export const initializeRethink = () => async state => {
   let db = false;
   let connected = false;
@@ -22,8 +33,6 @@ export const initializeRethink = () => async state => {
       path: '/',       // HTTP path to websocket route
       secure: false,     // set true to use secure TLS websockets
     });
-
-    console.log('Connected');
 
     connected = true;
     connection = db;

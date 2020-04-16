@@ -15,17 +15,20 @@ Want to contribute? Feel free to submit pull requests, create issues, and help w
 
 Below holds information on what was recently done, and what is in the near future.
 
+- [ ] Handle when websocket-server is not online
 - [X] Initialize Rethink Client in App State
 - [X] List databases and their tables.
 - [X] Start screen for table
 - [X] Retrieve data for table
 - [X] Minimal view for table data
-- [ ] Add ability to add new document
-- [ ] Add options for each table document
-- [ ] Ability to delete table
+- [X] Add ability to add new document
+- [X] Add options for each table document
+- [X] Ability to delete table
 - [ ] Ability to create new database
-- [ ] Ability to create new tables
+- [X] Ability to create new tables
 - [ ] Create connection screen (Specify websocket address, database information)
+- [ ] Refactor rethink client (Possibly create a react hook)
+- [ ] Figure out why changefeeds are not reporting back once subscribed to.
 
 # Requirements
 
@@ -40,3 +43,5 @@ You must be running a rethinkdb websocket server so that the client can run quer
 
 - `cd client && yarn`
 - `yarn start`
+
+**NOTE: REQL ADMIN ASSUMES YOU HAVE A WEBSOCKET-SERVER RUNNING ON PORT 8000 AT THE MOMENT. THIS WILL BE UPDATED AT A LATER DATE ONCE THE APPLICATION IS MORE DEVELOPED**
