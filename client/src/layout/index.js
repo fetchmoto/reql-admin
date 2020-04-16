@@ -68,8 +68,6 @@ const ApplicationLayout = props => {
         .dbCreate(createDatabaseData.name)
         .run(props.rethink.connection);
 
-      console.log(res);
-
       if (res.dbs_created === 0) {
         setCreateDatabaseLoading(false);
         return message.error('Database could not be created.');
@@ -123,8 +121,6 @@ const ApplicationLayout = props => {
       const res = await props.rethink.client
         .tableCreate(createTableData.name)
         .run(props.rethink.connection);
-
-      console.log(res);
 
       if (res.tables_created === 0) {
         setCreateTableLoading(false);
@@ -221,7 +217,14 @@ const ApplicationLayout = props => {
             <i className="fas fa-plus-circle"></i>&nbsp;&nbsp; Create Table
           </Menu.Item>
           {database.tables.map((table, index) => {
-            return (<Menu.Item onClick={() => navigate(`/database/${database.name}/table/${table}`)} key={index}><i className="fas fa-table"></i>&nbsp;&nbsp;{table}</Menu.Item>)
+            return (
+              <Menu.Item
+                onClick={() => navigate(`/database/${database.name}/table/${table}`)}
+                key={index}
+              >
+                <i className="fas fa-table"></i>&nbsp;&nbsp;{table}
+              </Menu.Item>
+            );
           })}
         </SubMenu>
       );
@@ -253,7 +256,12 @@ const ApplicationLayout = props => {
         onCancel={closeCreateDatabaseModal.bind(this)}
         confirmLoading={createDatabaseLoading}
       >
-        <Input value={createDatabaseData.name} onChange={e => updateCreateDatabaseData('name', e.target.value)} placeholder="Database Name" style={{marginBottom: 15}} />
+        <Input
+          value={createDatabaseData.name}
+          onChange={e => updateCreateDatabaseData('name', e.target.value)}
+          placeholder="Database Name"
+          style={{marginBottom: 15}}
+        />
       </Modal>
 
       {/** Modal for creating a table. **/}
@@ -264,7 +272,12 @@ const ApplicationLayout = props => {
         onCancel={closeCreateTableModal.bind(this)}
         confirmLoading={createTableLoading}
       >
-        <Input value={createTableData.name} onChange={e => updateCreateTableData('name', e.target.value)} placeholder="Table Name" style={{marginBottom: 15}} />
+        <Input
+          value={createTableData.name} 
+          onChange={e => updateCreateTableData('name', e.target.value)}
+          placeholder="Table Name"
+          style={{marginBottom: 15}}
+        />
       </Modal>
     </div>
   );
