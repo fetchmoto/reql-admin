@@ -1,4 +1,4 @@
-const _proto = {
+const proto = {
 
   csv(objArray) {
     let array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
@@ -8,7 +8,7 @@ const _proto = {
       let line = '';
       for (let index in array[i]) {
         if (line != '') line += ',';
-        line += '"' + array[i][index] + '"';
+        line += `\"${array[i][index]}\"`;
       }
       str += line + '\r\n';
     }
@@ -52,4 +52,4 @@ const _proto = {
 
 };
 
-export default Object.create(_proto);
+export default Object.create(proto);

@@ -672,7 +672,7 @@ const DatabaseTable = props => {
     }
   });
 
-  const headers = Object.keys(data[0]).map(d => d);
+  const headers = data.length ? Object.keys(data[0]).map(d => d) : {};
 
   return (
     <>
@@ -714,7 +714,7 @@ const DatabaseTable = props => {
 
               return (
                 <li key={i} className={active ? 'selected' : ''} onClick={selectDocument.bind(this, i)}>
-                  {item.id}
+                  <strong>{item.id}</strong>
                   <i className="fas fa-angle-right icon"></i>
                 </li>
               )
