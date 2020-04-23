@@ -714,7 +714,7 @@ const DatabaseTable = props => {
 
               return (
                 <li key={i} className={active ? 'selected' : ''} onClick={selectDocument.bind(this, i)}>
-                  <strong>{item.id}</strong>
+                  {item.id}
                   <i className="fas fa-angle-right icon"></i>
                 </li>
               )

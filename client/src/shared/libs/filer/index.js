@@ -21,7 +21,7 @@ const proto = {
   },
 
   /**
-   * Exports a given array of data as a CSV or 
+   * Exports a given array of data as a CSV or
    * JSON file.
    */
   export (type = 'csv', headers, items, title) {
