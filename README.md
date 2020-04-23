@@ -2,45 +2,35 @@
 
 A future Administration GUI for RethinkDB.
 
+You can do the following as of now:
+
+- Create Database
+- Create Table
+- Create Document
+- Export table to CSV (JSON is available, just not in the UI yet.)
+- Delete Table
+- Update field in Document
+- Create field in Document (Sub-collection support)
+- Delete field in Document
+
 ----
-**VERY EARLY STAGES OF DEVELOPMENT, CHECK BACK FOR UPDATES**
+**Disclaimer - This is an early release of the tool. This could mean that the tool is not yet production ready due to existing bugs.**
 ----
 
 # Contributions
 
 Want to contribute? Feel free to submit pull requests, create issues, and help with existing issues. The goal here is to create an up to date tool for easy RethinkDB administration.
 
-# Bugs
+# Known Bugs
 - [ ] When editing a field, if the field name is changed, it will add it, but not delete the old one.
-
-# Todo
-
-Below holds information on what was recently done, and what is in the near future.
-
-- [ ] Come up with a home page idea that has nice features
-- [ ] Handle when websocket-server is not online
-- [X] Initialize Rethink Client in App State
-- [X] List databases and their tables.
-- [X] Start screen for table
-- [X] Retrieve data for table
-- [X] Minimal view for table data
-- [X] Add ability to add new document
-- [X] Add options for each table document
-- [X] Ability to delete table
-- [X] Ability to create new database
-- [X] Ability to create new tables
-- [ ] Create connection screen (Specify websocket address, database information)
-- [X] Refactor rethink client (Possibly create a react hook)
-- [ ] Figure out why changefeeds are not reporting back once subscribed to.
-- [ ] Filtering on DatabaseTable component
-- [ ] Renaming a table
-- [ ] Renaming a database
-- [X] Handling sub-documents display
-- [ ] Code navigation from scratch for better option layout
 
 # Roadmap Features
 - [ ] Import JSON / CSV into Tables
-- [X] Export table as JSON / CSV
+- [ ] Handle when websocket-server is not online
+- [ ] Create connection screen (Specify websocket address, database information)
+- [ ] Figure out why changefeeds are not reporting back once subscribed to.
+- [ ] Filtering on DatabaseTable component
+- [ ] Renaming a database
 
 # Requirements
 
