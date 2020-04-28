@@ -436,10 +436,10 @@ const DatabaseTable = props => {
         d = _.set(d, `${path}.${createFieldData.fields[i].field}`, createFieldData.fields[i].value);
       }
     } else {
-      let path = (createFieldData.path ? createFieldData.path : '');
+      let path = (createFieldData.path ? createFieldData.path + '.' : '');
 
       if (createFieldData.fields.length)
-        d = _.set(d, `${path}.${createFieldData.fields[0].field}`, createFieldData.fields[0].value);
+        d = _.set(d, `${path}${createFieldData.fields[0].field}`, createFieldData.fields[0].value);
     }
 
     try {
