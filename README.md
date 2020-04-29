@@ -2,6 +2,10 @@
 
 A future Administration GUI for RethinkDB.
 
+<div align="center">
+  <img src="./ui.png" alt="ReQL Admin UI" />
+</div>
+
 You can do the following as of now:
 
 - Create Database
