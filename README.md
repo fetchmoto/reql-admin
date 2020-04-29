@@ -1,6 +1,6 @@
 # ReQL Admin
 
-A beautiful Administration GUI for RethinkDB.
+A beautiful administration GUI for RethinkDB.
 
 <div align="center">
   <img src="./ui.png" alt="ReQL Admin UI" />
