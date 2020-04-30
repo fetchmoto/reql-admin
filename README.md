@@ -26,7 +26,7 @@ You can do the following as of now:
 Want to contribute? Feel free to submit pull requests, create issues, and help with existing issues. The goal here is to create an up to date tool for easy RethinkDB administration.
 
 # Known Bugs
-- [ ] When editing a field, if the field name is changed, it will add it, but not delete the old one.
+- [X] When editing a field, if the field name is changed, it will add it, but not delete the old one.
 
 # Roadmap Features
 - [ ] Import JSON / CSV into Tables
