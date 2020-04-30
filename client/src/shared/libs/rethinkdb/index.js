@@ -29,6 +29,15 @@ const _proto = {
   async initialize (configuration = {}) {
 
     /**
+     * @TODO
+     *
+     * Add user authentication logic in this websocket connection.
+     * We don't want the ability to just hop right in to this client
+     * with out some type of authentication unless it's an option
+     * set by the admin/developer.
+     */
+
+    /**
      * Class configuration variable checks
      */
 
