@@ -119,6 +119,7 @@ const ApplicationLayout = props => {
     try {
       // Get the database list
       const res = await props.rethink.client
+        .db(currentDatabase)
         .tableCreate(createTableData.name)
         .run(props.rethink.connection);
 
