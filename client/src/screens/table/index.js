@@ -21,7 +21,7 @@ import { Loader } from '../../shared/components';
 import './table.scss';
 
 // Default data objects
-const defaultEditData = { field: '', value: '' };
+const defaultEditData = { originalField: '', field: '', value: '' };
 
 const defaultCreateData = {
   type: 'field', // or collection
@@ -161,6 +161,7 @@ const DatabaseTable = props => {
    */
   const openEditFieldModal = key => {
     setEditFieldData({
+      originalField: key,
       field: key,
       value: (key.includes('.') ? _.get(doc, key) : doc[key])
     });
@@ -386,6 +387,11 @@ const DatabaseTable = props => {
     let field = editFieldData.field;
     let d = doc;
 
+    // Compare fields, see if the field changed.
+    if (editFieldData.originalField !== editFieldData.field) {
+      d = _.omit(d, editFieldData.originalField);
+    }
+
     if (field.includes('.')) d = _.set(d, field, editFieldData.value);
     else d[field] = editFieldData.value;
 
@@ -394,7 +400,7 @@ const DatabaseTable = props => {
         .db(database)
         .table(table)
         .filter({ id: doc.id })
-        .update(d)
+        .replace(d)
         .run(props.rethink.connection);
 
       if (res.replaced === 0) return message.error('Unable to update field.');
