@@ -1,0 +1,21 @@
+{
+  "name": "reql-admin-dist",
+  "version": "0.1.1",
+  "private": true,
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "rethinkdb-websocket-server": "^0.6.0",
+    "yargs": "^15.3.1"
+  },
+  "scripts": {
+    "build": "cd ./../client && yarn build && ./../dist",
+    "client": "cd ./../client && yarn start",
+    "server": "nodemon server.js",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
+    "start": "node server.js --env=production"
+  },
+  "devDependencies": {
+    "concurrently": "^5.2.0"
+  }
+}

@@ -528,7 +528,6 @@ const DatabaseTable = props => {
         .get(uuid)
         .run(props.rethink.connection);
 
-      console.log(res);
       if (res === null) return false;
       return res;
     } catch (error) {
@@ -554,12 +553,60 @@ const DatabaseTable = props => {
       // Convert to an array.
       const data = await res.toArray();
       setData(data);
+
+      trackChangesForTable();
       return setLoading(false);
     } catch (error) {
       console.log(error);
     }
 
     setData([]);
+  }
+
+  const trackChangesForTable = async () => {
+    const self = this;
+
+    try {
+
+      // Get the database list
+      await props.rethink.client
+        .db(database)
+        .table(table)
+        .changes({ includeInitial: true, includeTypes: true })
+        .run(props.rethink.connection, (error, cursor) => {
+          if (error) return console.log(error);
+
+          cursor.each((changeError, doc) => {
+            handleTableChangeEvent(doc);
+          });
+        });
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleTableChangeEvent = async (doc) => {
+    if (doc.type === 'change') {
+      const newData = doc.new_val;
+      const oldData = doc.old_val;
+
+      const index = data.findIndex(d => d.id === doc.id);
+      if (index === undefined || index === null || index === false) {
+        console.log('Could not determine index.');
+        return false;
+      }
+
+      updateDocumentInData(index, newData);
+    }
+
+    if (doc.type === 'add') {
+      // retrieveTableData();
+    }
+
+    if (doc.type === 'remove') {
+      // retrieveTableData();
+    }
   }
 
   /**

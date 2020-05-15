@@ -168,7 +168,11 @@ const ApplicationLayout = props => {
        */
       for (let i = 0; i < dbs.length; i++) {
         // Get the table list response
-        const tablesRes = await props.rethink.client.db(dbs[i]).tableList().run(props.rethink.connection);
+        const tablesRes = await props.rethink
+          .client
+          .db(dbs[i])
+          .tableList()
+          .run(props.rethink.connection);
 
         // Convert the data to an array.
         const tables = await tablesRes.toArray();

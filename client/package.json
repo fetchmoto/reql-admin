@@ -22,7 +22,8 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postbuild": "mv build ../dist/"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -42,5 +43,6 @@
   "devDependencies": {
     "customize-cra": "^0.9.1",
     "react-app-rewired": "^2.1.5"
-  }
+  },
+  "proxy": "http://localhost:8888"
 }
