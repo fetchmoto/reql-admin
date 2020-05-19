@@ -25,9 +25,6 @@ You can do the following as of now:
 
 Want to contribute? Feel free to submit pull requests, create issues, and help with existing issues. The goal here is to create an up to date tool for easy RethinkDB administration.
 
-# Known Bugs
-- [X] When editing a field, if the field name is changed, it will add it, but not delete the old one.
-
 # Roadmap Features
 - [ ] Import JSON / CSV into Tables
 - [ ] Handle when websocket-server is not online
@@ -40,14 +37,20 @@ Want to contribute? Feel free to submit pull requests, create issues, and help w
 
 You must be running a rethinkdb websocket server so that the client can run queries. Please either refer to `rethinkdb-websocket-server`, or run the one that comes with this application in `/reql-ws`.
 
-# Running ReQL-WS
+# Running Development Environment
 
-- `cd reql-ws && yarn`
-- `yarn start`
+`cd dist && yarn dev`
 
-# Running in Browser
+This will run both the reql websocket server, and the create-react-app start command. It will watch both the client and the server for changes concurrently, so no need to run them seperately.
 
-- `cd client && yarn`
-- `yarn start`
+# Building the client
 
-**NOTE: REQL ADMIN ASSUMES YOU HAVE A WEBSOCKET-SERVER RUNNING ON PORT 8000 AT THE MOMENT. THIS WILL BE UPDATED AT A LATER DATE ONCE THE APPLICATION IS MORE DEVELOPED**
+`cd dist && yarn build`
+
+This will build the client, then move the build folder into the dist folder.
+
+# Running Production Environment
+
+`cd dist && yarn start` or `cd dist && node server.js --env=production`
+
+You can also pass a `--port` flag on the latter to run it on the port of your liking, or it will default to what you specify in `.env` or `8888`.

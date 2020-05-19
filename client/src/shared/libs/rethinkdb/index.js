@@ -3,9 +3,7 @@ import rClient, { rethinkdb as r } from 'rethinkdb-websocket-client';
 const _proto = {
 
   // Websocket Server Configuration
-  host: 'localhost',
-  port: 8000,
-  path: '/',
+  path: '/rethink',
   secure: false,
 
   // Class configuration
@@ -29,6 +27,15 @@ const _proto = {
   async initialize (configuration = {}) {
 
     /**
+     * @TODO
+     *
+     * Add user authentication logic in this websocket connection.
+     * We don't want the ability to just hop right in to this client
+     * with out some type of authentication unless it's an option
+     * set by the admin/developer.
+     */
+
+    /**
      * Class configuration variable checks
      */
 
@@ -38,12 +45,17 @@ const _proto = {
     if (configuration.reconnectOnDisconnect !== undefined)
       this.reconnectOnDisconnect = configuration.reconnectOnDisconnect;
 
+
+    const locationParts = window.location.host.split(":");
+    let host = locationParts[0];
+    let port = process.env.REACT_APP_SERVER_PORT || locationParts[1] || 80;
+
     /**
      * Build the configuration object
      */
     const config = {
-      host:   this.host,
-      port:   this.port,
+      host:   host,
+      port:   port,
       path:   this.path,
       secure: this.secure
     };
@@ -75,16 +87,17 @@ const _proto = {
   async connect (config) {
     try {
       const connection = await rClient.connect({
-        host: 'localhost',
-        port: 8000,
-        path: '/',       // HTTP path to websocket route
-        secure: false,     // set true to use secure TLS websockets
+        host: config.host,
+        port: config.port,
+        path: config.path,
+        secure: config.secure
       });
 
       console.log('RethinkDB Connected');
 
       return connection;
     } catch (error) {
+      console.log(error);
       this.error = error;
     }
 
