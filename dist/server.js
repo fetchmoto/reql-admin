@@ -11,6 +11,14 @@ const app = express();
 const wsListen = require('rethinkdb-websocket-server').listen;
 const argv = require('yargs').argv;
 
+const loginPage = require('express-login-page');
+
+const loginPageConfig = {
+	users: JSON.parse(process.env.ADMIN_USERS),
+	sessionMaxAge: (24 * 60 * 60 * 1000),
+  redirectPath: '/'
+}
+
 const environment = argv.env || process.env.NODE_ENV || 'dev';
 
 // Set the port
@@ -24,6 +32,7 @@ const server = require('http').createServer(app);
  * if the current environment is production.
  */
 if (environment === 'production') {
+  app.use(loginPage(loginPageConfig))
   app.use(express.static(path.join(__dirname, 'build')));
 }
 

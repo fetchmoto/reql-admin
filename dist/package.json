@@ -5,11 +5,13 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-login-page": "^1.0.1",
     "rethinkdb-websocket-server": "^0.6.0",
     "yargs": "^15.3.1"
   },
   "scripts": {
-    "build": "cd ./../client && yarn build",
+    "clean": "rm -rf ./build",
+    "build": "yarn clean && cd ./../client && yarn build",
     "client": "cd ./../client && yarn start",
     "server": "nodemon server.js",
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\"",
