@@ -33,24 +33,20 @@ Want to contribute? Feel free to submit pull requests, create issues, and help w
 - [ ] Filtering on DatabaseTable component
 - [ ] Renaming a database
 
-# Requirements
-
-You must be running a rethinkdb websocket server so that the client can run queries. Please either refer to `rethinkdb-websocket-server`, or run the one that comes with this application in `/reql-ws`.
-
 # Running Development Environment
 
-`cd dist && yarn dev`
+`cd dist && yarn && yarn dev`
 
 This will run both the reql websocket server, and the create-react-app start command. It will watch both the client and the server for changes concurrently, so no need to run them seperately.
 
 # Building the client
 
-`cd dist && yarn build`
+`cd dist && yarn && yarn build`
 
 This will build the client, then move the build folder into the dist folder.
 
 # Running Production Environment
 
-`cd dist && yarn start` or `cd dist && node server.js --env=production`
+`cd dist && yarn && yarn start` or `cd dist && node server.js --env=production`
 
 You can also pass a `--port` flag on the latter to run it on the port of your liking, or it will default to what you specify in `.env` or `8888`.
