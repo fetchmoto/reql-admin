@@ -48,13 +48,10 @@ const defaultCreateDocumentData = {
 const { Option } = Select;
 
 const DatabaseTable = props => {
-  const { database, table } = props;
+  const { database, table, currentTable, setDocuments } = props;
 
   // Loading state
   const [ loading, setLoading ] = useState(true);
-
-  // Table data
-  const [ data, setData ] = useState([]);
 
   // Current selected document
   const [ doc, setDoc ] = useState(false);
@@ -71,25 +68,62 @@ const DatabaseTable = props => {
   const [ createDocumentVisible, setCreateDocumentVisible ] = useState(false);
   const [ createDocumentData, setCreateDocumentData ] = useState(defaultCreateDocumentData);
 
-  const updateDocumentInData = (key, doc) => {
-    let documents = data;
-    documents[key] = doc;
-    setData([...documents]);
-    setDoc(documents[key]);
+  /**
+   * @TODO Explore a better option
+   * Making use of a window object here.
+   * Considering this still secure since the platform is locked down
+   * via the express-login-page package. The reason for this is because
+   * the changefeed method that is responsible for updating the document
+   * set, is not able to reach the most recent props object for some reason.
+   * This is a temporary fix while we explore more options.
+   */
+  useEffect(() => {
+    window.REQL_ADMIN.documents = props.currentTable.documents;
+  }, [props.currentTable.documents])
+
+  /**
+   * Inserts a new document in to the data set.
+   */
+  const insertDocumentInData = (doc) => {
+    let documents = window.REQL_ADMIN.documents;
+    documents[(window.REQL_ADMIN.documents.length)] = doc;
+    setDocuments([...documents]);
   }
 
+  /**
+   * Updates a document in the data set
+   */
+  const updateDocumentInData = (key, doc) => {
+    let documents = window.REQL_ADMIN.documents;
+    documents[key] = doc;
+    setDocuments([...documents]);
+
+    // If user is on this document, set the current doc to false.
+    if (doc && documents)
+      if (documents[key])
+        if (doc.id === documents[key].id) setDoc(documents[key]);
+  }
+
+  /**
+   * Removes a document from the data set.
+   */
   const removeDocumentFromData = key => {
-    let documents = data;
+    let documents = window.REQL_ADMIN.documents;
+
+    // If user is on this document, set the current doc to false.
+    if (doc && documents)
+      if (documents[key])
+        if (doc.id === documents[key].id) setDoc(false);
+
     documents.splice(key, 1);
-    setData([...documents]);
-    setDoc(false);
+    setDocuments([...documents]);
   }
 
   /**
    * Selects the current document to be shown.
    */
   const selectDocument = key => {
-    setDoc(data[key]);
+    setDoc(currentTable.documents[key]);
   }
 
   /**
@@ -100,11 +134,19 @@ const DatabaseTable = props => {
     setCreateDocumentVisible(true);
   }
 
+  /**
+   * Closes the create document modal
+   */
   const closeCreateDocumentModal = () => {
     setCreateDocumentData(defaultCreateDocumentData);
     setCreateDocumentVisible(false);
   }
 
+  /**
+   * Removes a document data field from the
+   * create document data set.
+   * @param  {int} key
+   */
   const removeCreateDocumentDataField = key => {
     let fields = createDocumentData.fields;
     fields.splice(key, 1);
@@ -316,7 +358,7 @@ const DatabaseTable = props => {
 
       if (res.deleted === 0) return message.error('Unable to remove document.');
 
-      const index = data.findIndex(d => d.id === doc.id);
+      const index = currentTable.documents.findIndex(d => d.id === doc.id);
       if (index === undefined || index === null || index === false) {
         console.log('Could not determine index.');
         return false;
@@ -405,7 +447,7 @@ const DatabaseTable = props => {
 
       if (res.replaced === 0) return message.error('Unable to update field.');
 
-      const index = data.findIndex(d => d.id === doc.id);
+      const index = currentTable.documents.findIndex(d => d.id === doc.id);
       if (index === undefined || index === null || index === false) {
         console.log('Could not determine index.');
         return false;
@@ -458,7 +500,7 @@ const DatabaseTable = props => {
 
       if (res.replaced === 0) return message.error('Unable to add field.');
 
-      const index = data.findIndex(d => d.id === doc.id);
+      const index = currentTable.documents.findIndex(d => d.id === doc.id);
       if (index === undefined || index === null || index === false) {
         console.log('Could not determine index.');
         return false;
@@ -498,7 +540,7 @@ const DatabaseTable = props => {
 
       if (res.replaced === 0) return message.error('Unable to remove field.');
 
-      const index = data.findIndex(d => d.id === doc.id);
+      const index = currentTable.documents.findIndex(d => d.id === doc.id);
       if (index === undefined || index === null || index === false) {
         console.log('Could not determine index.');
         return false;
@@ -543,6 +585,8 @@ const DatabaseTable = props => {
   const retrieveTableData = async () => {
     try {
 
+      console.log('Called again!')
+
       // Get the database list
       const res = await props.rethink.client
         .db(database)
@@ -552,7 +596,7 @@ const DatabaseTable = props => {
 
       // Convert to an array.
       const data = await res.toArray();
-      setData(data);
+      setDocuments(data);
 
       trackChangesForTable();
       return setLoading(false);
@@ -560,7 +604,7 @@ const DatabaseTable = props => {
       console.log(error);
     }
 
-    setData([]);
+    setDocuments([]);
   }
 
   const trackChangesForTable = async () => {
@@ -577,7 +621,8 @@ const DatabaseTable = props => {
           if (error) return console.log(error);
 
           cursor.each((changeError, doc) => {
-            handleTableChangeEvent(doc);
+            console.log(doc);
+            handleTableChangeEvent(doc, props.currentTable.documents);
           });
         });
 
@@ -586,13 +631,16 @@ const DatabaseTable = props => {
     }
   }
 
-  const handleTableChangeEvent = async (doc) => {
+  const handleTableChangeEvent = async (doc, documents) => {
+
+    if (doc.type === 'initial') return;
+
     if (doc.type === 'change') {
       const newData = doc.new_val;
       const oldData = doc.old_val;
 
-      const index = data.findIndex(d => d.id === doc.id);
-      if (index === undefined || index === null || index === false) {
+      const index = window.REQL_ADMIN.documents.findIndex(d => d.id === newData.id);
+      if (index === undefined || index === null || index === false || index === -1) {
         console.log('Could not determine index.');
         return false;
       }
@@ -601,11 +649,21 @@ const DatabaseTable = props => {
     }
 
     if (doc.type === 'add') {
-      // retrieveTableData();
+      const newData = doc.new_val;
+
+      insertDocumentInData(newData);
     }
 
     if (doc.type === 'remove') {
-      // retrieveTableData();
+      const oldData = doc.old_val;
+
+      const index = window.REQL_ADMIN.documents.findIndex(d => d.id === oldData.id);
+      if (index === undefined || index === null || index === false) {
+        console.log('Could not determine index.');
+        return false;
+      }
+
+      removeDocumentFromData(index);
     }
   }
 
@@ -703,6 +761,7 @@ const DatabaseTable = props => {
 
     // If rethink is connected, and databases have not been pulled.
     if (props.rethink.connected === true) {
+      console.log('Test')
       retrieveTableData();
       setDoc(false);
     }
@@ -718,14 +777,14 @@ const DatabaseTable = props => {
    * between this array, and the data array is this will
    * add a key for each document (Needed for table)
    */
-  const items = data.map((d, i) => {
+  const items = currentTable.documents.map((d, i) => {
     return {
       id: d.id,
       key: i
     }
   });
 
-  const headers = data.length ? Object.keys(data[0]).map(d => d) : {};
+  const headers = currentTable.documents.length ? Object.keys(currentTable.documents[0]).map(d => d) : {};
 
   return (
     <>
@@ -739,7 +798,7 @@ const DatabaseTable = props => {
               </Tooltip>
 
               <Tooltip title="Export Table">
-                <i onClick={() => filer.export('json', headers, data, table)} className="fas fa-file-export icon"></i>
+                <i onClick={() => filer.export('json', headers, currentTable.documents, table)} className="fas fa-file-export icon"></i>
               </Tooltip>
 
               <Popconfirm

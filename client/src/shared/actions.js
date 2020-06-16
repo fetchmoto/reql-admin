@@ -21,3 +21,10 @@ export const forceReload = () => state => {
 export const setRethink = rethink => state => {
   return { rethink };
 }
+
+/**
+ * Sets the documents for a table.
+ */
+export const setDocuments = documents => state => {
+  return { currentTable: { documents: [...documents] } };
+}

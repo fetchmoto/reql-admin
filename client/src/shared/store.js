@@ -9,6 +9,10 @@ export default {
     error: false
   },
 
+  currentTable: {
+    documents: []
+  },
+
   forceReloadKey: 0,
 
   ...actions
