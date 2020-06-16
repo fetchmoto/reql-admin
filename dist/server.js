@@ -72,6 +72,11 @@ if (environment === 'production') {
   app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));
   });
+
+  // Redirect any unknown paths to index.html
+  app.get('*', function (req, res) {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  });
 }
 
 server.listen(port, () => {
