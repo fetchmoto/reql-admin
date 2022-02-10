@@ -10,7 +10,7 @@
     "babel-plugin-import": "^1.13.0",
     "hookrouter": "^1.2.3",
     "lodash": "^4.17.15",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "react": "^16.13.1",
     "react-contextual": "^5.0.2",
     "react-dom": "^16.13.1",
